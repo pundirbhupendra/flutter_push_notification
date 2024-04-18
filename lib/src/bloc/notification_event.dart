@@ -1,8 +1,10 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
+abstract class NotificationState {}
 
-abstract class NotificationEvent {}
+class NotificationInitial extends NotificationState {}
 
-class NotificationReceivedEvent extends NotificationEvent {
-  NotificationReceivedEvent({this.event});
-  RemoteMessage? event;
+class NotificationLoaded extends NotificationState {
+  final String title;
+  final String body;
+
+  NotificationLoaded({required this.title, required this.body});
 }

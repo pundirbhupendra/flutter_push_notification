@@ -1,5 +1,8 @@
-abstract class NotificationState {}
+abstract class NotificationEvent {}
 
-class NotificationInitState extends NotificationState {}
+class NotificationReceived extends NotificationEvent {
+  final String title;
+  final String body;
 
-class NotificationReceivedState extends NotificationState {}
+  NotificationReceived({required this.title, required this.body});
+}

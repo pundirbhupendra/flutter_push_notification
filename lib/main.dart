@@ -3,8 +3,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_push_notification/src/bloc/notification_bloc.dart';
-import 'src/bloc/notification_event.dart';
 import 'src/firbaseConfigs/fir_confis.dart';
+import 'src/firbaseConfigs/setup_notification.dart';
 import 'src/home/home_page.dart';
 
 void main() async {
@@ -15,6 +15,7 @@ void main() async {
   debugPrint(fcmToken);
 
   //Notification handler funcs ragister
+  NotificationService().requestPermission();
 
   runApp(const MyApp());
 }
@@ -53,29 +54,10 @@ class NotificationSetup extends StatefulWidget {
 }
 
 class _NotificationSetupState extends State<NotificationSetup> {
-  _setHandlerFunctions(BuildContext context) {
-    context.read<NotificationBloc>().setupFlutterNotifications();
-    print('object1');
-    FirebaseMessaging.onMessage.listen((event) {
-      print('object');
-      context
-          .read<NotificationBloc>()
-          .add(NotificationReceivedEvent(event: event));
-    });
-
-    FirebaseMessaging.onBackgroundMessage((message) => onBackground(message));
-  }
-
-  onBackground(RemoteMessage message) {
-    context
-        .read<NotificationBloc>()
-        .add(NotificationReceivedEvent(event: message));
-  }
-
   @override
   void initState() {
     super.initState();
-    _setHandlerFunctions(context);
+    NotificationService().setupFCM(context);
   }
 
   @override
