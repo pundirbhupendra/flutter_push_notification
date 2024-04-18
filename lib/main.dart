@@ -55,17 +55,21 @@ class NotificationSetup extends StatefulWidget {
 class _NotificationSetupState extends State<NotificationSetup> {
   _setHandlerFunctions(BuildContext context) {
     context.read<NotificationBloc>().setupFlutterNotifications();
+    print('object1');
     FirebaseMessaging.onMessage.listen((event) {
+      print('object');
       context
           .read<NotificationBloc>()
           .add(NotificationReceivedEvent(event: event));
     });
 
-    FirebaseMessaging.onMessage.listen((event) {
-      context
-          .read<NotificationBloc>()
-          .add(NotificationReceivedEvent(event: event));
-    });
+    FirebaseMessaging.onBackgroundMessage((message) => onBackground(message));
+  }
+
+  onBackground(RemoteMessage message) {
+    context
+        .read<NotificationBloc>()
+        .add(NotificationReceivedEvent(event: message));
   }
 
   @override

@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 mixin NotificationSetUp {
   late AndroidNotificationChannel channel;
-  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  //     FlutterLocalNotificationsPlugin();
 
   Future<void> setupFlutterNotifications() async {
     // if (_isFlutterLocalNotificationsInitialized) return;
@@ -15,7 +18,7 @@ mixin NotificationSetUp {
       importance: Importance.high,
     );
 
-    // flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    //android 13 heigher
 
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
@@ -24,25 +27,41 @@ mixin NotificationSetUp {
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
 
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+    // await flutterLocalNotificationsPlugin
+    //     .resolvePlatformSpecificImplementation<
+    //         AndroidFlutterLocalNotificationsPlugin>()
+    //     ?.createNotificationChannel(channel);
 
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('');
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      // iOS: initializationSettingsDarwin,
+      // macOS: initializationSettingsDarwin,
+      // linux: initializationSettingsLinux,
     );
+
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    if (Platform.isIOS) {
+      await FirebaseMessaging.instance
+          .setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    }
   }
 
   showNotification() {
-    flutterLocalNotificationsPlugin.show(
-        1,
-        'title',
-        'body',
-        NotificationDetails(
-            android: AndroidNotificationDetails(channel.id, channel.name)));
+    // flutterLocalNotificationsPlugin.show(
+    //     channel.hashCode,
+    //     'title',
+    //     'body',
+    //     NotificationDetails(
+    //         android: AndroidNotificationDetails(channel.id, channel.name,
+    //             channelDescription: channel.description)));
   }
 }
