@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_push_notification/src/bloc/notification_bloc.dart';
@@ -7,12 +8,23 @@ import 'src/firbaseConfigs/fir_confis.dart';
 import 'src/firbaseConfigs/setup_notification.dart';
 import 'src/home/home_page.dart';
 
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  if (kDebugMode) {
+    print('A new onMessageOpenedApp event was published!');
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  final fcmToken = await FirebaseMessaging.instance.getToken();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  if (kDebugMode) {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
 
-  debugPrint(fcmToken);
+    debugPrint(fcmToken);
+  }
 
   //Notification handler funcs ragister
   NotificationService().requestPermission();
@@ -64,7 +76,7 @@ class _NotificationSetupState extends State<NotificationSetup> {
   Widget build(BuildContext context) {
     // ignore: prefer_const_constructors
     return Scaffold(
-      body: const MyHomePage(title: 'Flutter Demo Home Page'),
+      body: const MyHomePage(title: 'Flutter Demo Notification'),
     );
   }
 }

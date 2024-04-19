@@ -1,11 +1,9 @@
 import 'dart:io';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_push_notification/src/firbaseConfigs/fir_confis.dart';
 import '../bloc/notification_bloc.dart';
 import '../bloc/notification_state.dart';
 
@@ -27,7 +25,6 @@ class NotificationService {
       alert: true,
       badge: true,
       sound: true,
-      provisional: false,
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
@@ -66,12 +63,11 @@ class NotificationService {
         const InitializationSettings(
       android: initializationSettingsAndroid,
     );
-
+    //api leve 26
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance_channel',
       'High Importance Notifications',
       description: 'This channel is used for important notifications.',
-      // description
       importance: Importance.max,
     );
     flutterLocalNotificationsPlugin.initialize(
@@ -93,6 +89,7 @@ class NotificationService {
   }
 
   void setupFCM(BuildContext context) {
+    //To handle messages whilst the app is in the background or terminated.
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       var notification = message.notification;
       var android = message.notification?.android;
@@ -104,7 +101,7 @@ class NotificationService {
             );
       }
     });
-
+    //If your app is opened via a notification whilst the app is terminated.
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       var notification = message.notification;
       if (notification != null) {
@@ -113,13 +110,6 @@ class NotificationService {
                   title: notification.title ?? "No Title",
                   body: notification.body ?? "No Body"),
             );
-      }
-    });
-    FirebaseMessaging.onBackgroundMessage((message) async {
-      await Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform);
-      if (kDebugMode) {
-        print('A new onMessageOpenedApp event was published!');
       }
     });
   }
