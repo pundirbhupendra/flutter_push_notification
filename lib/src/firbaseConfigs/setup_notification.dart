@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../bloc/notification_bloc.dart';
-import '../bloc/notification_state.dart';
+import '../bloc/notification_event.dart';
 
 class NotificationService {
   static NotificationService? _instance;
